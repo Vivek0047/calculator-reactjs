@@ -1,6 +1,7 @@
-import React, { useEffect, useReducer, useRef, useContext } from 'react'
+import React, { useEffect, useReducer, useRef } from 'react'
 import ButtonReact from './ButtonReact'
 import ButtonGroupReact from './ButtonGroupReact'
+import { InputGroup } from 'react-bootstrap'
 import { evaluate } from 'mathjs'
 import '../main.css'
 import CalculatorLog from './CalculatorLog'
@@ -18,7 +19,7 @@ const reducer = (state, action) => {
 
     switch (action.type) {
         case 'query':
-            if (state.result.includes('.') & action.value === '.') {
+            if (state.query.split('.').length - 1 > 1) {
                 return { ...state }
             }
             return { ...state, result: state.result + action.value, query: state.query + action.value }
@@ -43,6 +44,9 @@ const reducer = (state, action) => {
             else {
                 return { ...state }
             }
+        case 'remove-char':
+            let len = state.query.length
+            return { ...state, query: state.query.substring(1, len) }
         case 'reset':
             return initialState
         default:
@@ -57,7 +61,7 @@ function SimpleCalculator() {
 
     useEffect((state) => {
         console.log(state)
-        inputRef.current.focus()
+        // inputRef.current.focus()
     }, [state.query])
 
     return (
@@ -65,7 +69,10 @@ function SimpleCalculator() {
             <div className="col-md-6">
                 <div style={{ padding: "20px" }}>
                     <div>
-                        <input style={{ width: "72%" }} ref={inputRef} type="number" value={state.query} onKeyDown={e => { e.preventDefault() }} onChange={e => dispatch({ type: 'query', value: e.target.value })} />
+                        <InputGroup className="grp-justify">
+                            <input className="col-md-8" ref={inputRef} type="number" value={state.query} onKeyDown={e => { e.preventDefault() }} onChange={e => dispatch({ type: 'query', value: e.target.value })} />
+                            <ButtonReact dispatch={() => dispatch({ type: 'remove-char' })}><i className="material-icons">backspace</i></ButtonReact>
+                        </InputGroup>
                     </div>
                     <div style={{ padding: "15px" }}>
                         <div>
