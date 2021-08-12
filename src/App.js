@@ -6,11 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function App() {
   return (
     <div className="App">
-      <div className="row">
-        <div className="col-md-6">
-          <SimpleCalculator />
-        </div>
-      </div>
+      <SimpleCalculator />
     </div>
   );
 }
