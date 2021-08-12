@@ -1,11 +1,14 @@
 import React, { useEffect, useReducer, useRef } from 'react'
-import Button from './Button'
+import ButtonReact from './ButtonReact'
+import ButtonGroupReact from './ButtonGroupReact'
 import { evaluate } from 'mathjs'
 import '../main.css'
+
 const initialState = {
     query: '',
     result: '',
-    sign: '-'
+    sign: '-',
+    signClickCounter: 2
 }
 
 const reducer = (state, action) => {
@@ -27,10 +30,14 @@ const reducer = (state, action) => {
             val = evaluate(state.result)
             return { ...state, query: '' + val }
         case '+/-':
-            if (state.query === '' & state.sign === '-') {
-                return { ...state, query: state.sign }
+            if ((state.query === '' || state.query === '-') & (state.signClickCounter % 2) !== 0) {
+                return { ...state, query: '', signClickCounter: state.signClickCounter + 1 }
+            } else if ((state.query === '' || state.query === '+') & (state.signClickCounter % 2) === 0) {
+                return { ...state, query: '-', signClickCounter: state.signClickCounter + 1 }
             }
-            break;
+            else {
+                return { ...state }
+            }
         case 'reset':
             return initialState
         default:
@@ -43,42 +50,52 @@ function SimpleCalculator() {
     const [state, dispatch] = useReducer(reducer, initialState)
     const inputRef = useRef(null)
 
-    useEffect(() => {
+    useEffect((state) => {
         console.log(state)
         inputRef.current.focus()
     }, [state.query])
 
     return (
-        <div>
+        <div style={{ padding: "20px" }}>
             <div>
-                <input ref={inputRef} type="number" value={state.query} onKeyDown={e => { e.preventDefault() }} onChange={e => dispatch({ type: 'query', value: e.target.value })} />
+                <input style={{ width: "72%" }} ref={inputRef} type="number" value={state.query} onKeyDown={e => { e.preventDefault() }} onChange={e => dispatch({ type: 'query', value: e.target.value })} />
             </div>
-            <div>
-                <Button dispatch={e => dispatch({ type: 'query', value: '7' })} text="7"></Button>
-                <Button dispatch={e => dispatch({ type: 'query', value: '8' })} text="8"></Button>
-                <Button dispatch={e => dispatch({ type: 'query', value: '9' })} text="9"></Button>
-                <Button dispatch={() => dispatch({ type: 'x' })} text="x"></Button>
-            </div>
-            <div>
-                <Button dispatch={e => dispatch({ type: 'query', value: '4' })} text="4"></Button>
-                <Button dispatch={e => dispatch({ type: 'query', value: '5' })} text="5"></Button>
-                <Button dispatch={e => dispatch({ type: 'query', value: '6' })} text="6"></Button>
-                <Button dispatch={() => dispatch({ type: '-' })} text="-"></Button>
-            </div>
-            <div>
-                <Button dispatch={e => dispatch({ type: 'query', value: '1' })} text="1"></Button>
-                <Button dispatch={e => dispatch({ type: 'query', value: '2' })} text="2"></Button>
-                <Button dispatch={e => dispatch({ type: 'query', value: '3' })} text="3"></Button>
-                <Button dispatch={() => dispatch({ type: '+' })} text="+"></Button>
-            </div>
-            <div>
-                <Button dispatch={e => dispatch({ type: '+/-', value: '+/-' })} text="+/-"></Button>
-                <Button dispatch={e => dispatch({ type: 'query', value: '0' })} text="0"></Button>
-                <Button dispatch={e => dispatch({ type: 'query', value: '.' })} text="."></Button>
-                <Button dispatch={() => dispatch({ type: '=' })} text="="></Button>
-            </div>
-            <div>
-                <Button dispatch={() => dispatch({ type: 'reset' })} text='AC'></Button>
+            <div style={{ padding: "15px" }}>
+                <div>
+                    <ButtonGroupReact label="top-numbers" styles={{ width: "75%", marginBottom: "5px" }}>
+                        <ButtonReact dispatch={e => dispatch({ type: 'query', value: '7' })} text="7"></ButtonReact>
+                        <ButtonReact dispatch={e => dispatch({ type: 'query', value: '8' })} text="8"></ButtonReact>
+                        <ButtonReact dispatch={e => dispatch({ type: 'query', value: '9' })} text="9"></ButtonReact>
+                        <ButtonReact dispatch={() => dispatch({ type: 'x' })} text="x"></ButtonReact>
+                    </ButtonGroupReact>
+                </div>
+                <div>
+                    <ButtonGroupReact label="top-numbers" styles={{ width: "75%", marginBottom: "5px" }}>
+                        <ButtonReact dispatch={e => dispatch({ type: 'query', value: '4' })} text="4"></ButtonReact>
+                        <ButtonReact dispatch={e => dispatch({ type: 'query', value: '5' })} text="5"></ButtonReact>
+                        <ButtonReact dispatch={e => dispatch({ type: 'query', value: '6' })} text="6"></ButtonReact>
+                        <ButtonReact dispatch={() => dispatch({ type: '-' })} text="-"></ButtonReact>
+                    </ButtonGroupReact>
+                </div>
+                <div>
+                    <ButtonGroupReact label="top-numbers" styles={{ width: "75%", marginBottom: "5px" }}>
+                        <ButtonReact dispatch={e => dispatch({ type: 'query', value: '1' })} text="1"></ButtonReact>
+                        <ButtonReact dispatch={e => dispatch({ type: 'query', value: '2' })} text="2"></ButtonReact>
+                        <ButtonReact dispatch={e => dispatch({ type: 'query', value: '3' })} text="3"></ButtonReact>
+                        <ButtonReact dispatch={() => dispatch({ type: '+' })} text="+"></ButtonReact>
+                    </ButtonGroupReact>
+                </div>
+                <div>
+                    <ButtonGroupReact label="top-numbers" styles={{ width: "75%", marginBottom: "5px" }}>
+                        <ButtonReact dispatch={e => dispatch({ type: '+/-', value: '+/-' })} text="+/-"></ButtonReact>
+                        <ButtonReact dispatch={e => dispatch({ type: 'query', value: '0' })} text="0"></ButtonReact>
+                        <ButtonReact dispatch={e => dispatch({ type: 'query', value: '.' })} text="."></ButtonReact>
+                        <ButtonReact dispatch={() => dispatch({ type: '=' })} text="="></ButtonReact>
+                    </ButtonGroupReact>
+                </div>
+                <div>
+                    <ButtonReact dispatch={() => dispatch({ type: 'reset' })} text='AC'></ButtonReact>
+                </div>
             </div>
         </div>
     )
